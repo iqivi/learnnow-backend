@@ -1,1 +1,11 @@
-
+app:
+  jwtSecret: "RandomLongString"
+  jwtExpirationMs: 604800000 # 7 days in milliseconds (604,800,000)
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: validate
+  datasource:
+    url: jdbc:mysql://localhost:3312/movieservice
+    username: root
+    password: Mar10ram

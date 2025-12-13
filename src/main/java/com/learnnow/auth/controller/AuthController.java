@@ -1,7 +1,8 @@
 package com.learnnow.auth.controller;
 
 import com.learnnow.auth.dto.LoginRequest;
-import com.learnnow.auth.dto.LoginResponse;
+import com.learnnow.auth.dto.AuthResponse;
+import com.learnnow.auth.dto.SignUpRequest;
 import com.learnnow.auth.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -39,11 +40,11 @@ public class AuthController {
      * }
      */
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> authenticateUser(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<AuthResponse> authenticateUser(@RequestBody LoginRequest loginRequest) {
 
         try {
             // 1. Call the service layer to perform authentication
-            LoginResponse response = authService.authenticateUser(loginRequest);
+            AuthResponse response = authService.authenticateUser(loginRequest);
 
             // 2. Return a 200 OK with the token in the body
             return new ResponseEntity<>(response, HttpStatus.OK);
@@ -53,9 +54,27 @@ public class AuthController {
             // Note: In a real app, you would use a global exception handler for a clean response.
             // For now, we return a 401 Unauthorized status.
             return new ResponseEntity<>(
-                    new LoginResponse(null, "Authentication failed: " + e.getMessage()),
+                    new AuthResponse(false, "Authentication failed: " + e.getMessage()),
                     HttpStatus.UNAUTHORIZED
             );
         }
+    }
+
+    /**
+     * Handles POST requests to /api/auth/register.
+     * Expects a JSON payload in the body matching the SignUpRequest DTO.
+     */
+    @PostMapping("/register")
+    public ResponseEntity<AuthResponse> registerUser(@RequestBody SignUpRequest signUpRequest) {
+
+        AuthResponse response = authService.registerUser(signUpRequest);
+
+        // If the service returns a failed response, return a 400 Bad Request
+        if (!response.getSuccess()) {
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        }
+
+        // If registration is successful, return a 201 Created status
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 }

@@ -1,13 +1,21 @@
 package com.learnnow.auth.dto;
 
-public class LoginResponse {
+public class AuthResponse {
 
     private String accessToken;
     private String message;
     private String tokenType = "Bearer";
+    private Boolean success;
 
-    public LoginResponse(String accessToken, String message) {
+    public AuthResponse(String accessToken) {
         this.accessToken = accessToken;
+    }
+    public AuthResponse(String accessToken, String message) {
+        this.accessToken = accessToken;
+        this.message = message;
+    }
+    public AuthResponse(Boolean success,  String message) {
+        this.success = success;
         this.message = message;
     }
 
@@ -34,5 +42,12 @@ public class LoginResponse {
 
     public void setTokenType(String tokenType) {
         this.tokenType = tokenType;
+    }
+
+    public Boolean getSuccess() {
+        return success;
+    }
+    public void setSuccess(Boolean success) {
+        this.success = success;
     }
 }
