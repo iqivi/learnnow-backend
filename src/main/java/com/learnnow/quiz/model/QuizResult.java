@@ -7,7 +7,7 @@ import jakarta.persistence.*;
 public class QuizResult {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
@@ -18,11 +18,11 @@ public class QuizResult {
     private int maxScore;
     private boolean passed;
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

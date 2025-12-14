@@ -6,7 +6,7 @@ import jakarta.persistence.*;
 public class QuizAnswer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
     @ManyToOne
     @JoinColumn(name = "question_id")
     private QuizQuestion question;
@@ -14,11 +14,11 @@ public class QuizAnswer {
     private boolean correct;
     private int lessonIndex;
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
