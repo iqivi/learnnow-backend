@@ -1,4 +1,7 @@
 package com.learnnow.auth.security;
+import com.learnnow.auth.jwt.JwtAuthenticationEntryPoint;
+import com.learnnow.auth.jwt.JwtAuthenticationFilter;
+import com.learnnow.auth.service.CustomUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,23 +12,20 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.config.http.SessionCreationPolicy; // Needed for stateless API
+import org.springframework.security.config.http.SessionCreationPolicy; // Needed for stateless API - TODO integrate session
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
-public class SecurityConfig {
-
-
-    // Inject your UserDetailsService here (not shown for brevity)
+public class SecurityConfig { //DO NOT change anything here! Needs all the weird setup to handle authentication
 
     @Autowired
-    private JwtAuthenticationEntryPoint unauthorizedHandler; // The entry point you created
+    private JwtAuthenticationEntryPoint unauthorizedHandler;
     @Autowired
     private CustomUserDetailsService customUserDetailsService;
     @Autowired
     private JwtAuthenticationFilter jwtAuthenticationFilter;
-    // Expose AuthenticationManager as a Bean so it can be autowired in AuthService
+
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
@@ -50,7 +50,6 @@ public class SecurityConfig {
                         .anyRequest().authenticated() // Secure all other endpoints
                 );
 
-        // ADD THE JWT FILTER:
         // Register your custom filter to run before the standard Spring Security UsernamePasswordAuthenticationFilter
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 

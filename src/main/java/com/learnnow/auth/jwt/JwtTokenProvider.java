@@ -1,4 +1,4 @@
-package com.learnnow.auth.security;
+package com.learnnow.auth.jwt;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;

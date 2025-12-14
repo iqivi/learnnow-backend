@@ -1,6 +1,6 @@
 package com.learnnow.auth.dto;
 
-public class AuthResponse {
+public class AuthResponse { //reusable dto for returning requests to the client
 
     private String accessToken;
     private String message;

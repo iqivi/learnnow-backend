@@ -3,9 +3,9 @@ package com.learnnow.auth.service;
 import com.learnnow.auth.dto.AuthResponse;
 import com.learnnow.auth.dto.LoginRequest;
 import com.learnnow.auth.dto.SignUpRequest;
-import com.learnnow.user.model.User; // Assuming you have a User entity
-import com.learnnow.user.repository.UserRepository; // Assuming you have a User Repository
-import com.learnnow.auth.security.JwtTokenProvider;
+import com.learnnow.user.model.User;
+import com.learnnow.user.repository.UserRepository;
+import com.learnnow.auth.jwt.JwtTokenProvider;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -22,8 +22,8 @@ public class AuthService {
 
     private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider tokenProvider;
-    private final UserRepository userRepository; // Needed for registration and login
-    private final PasswordEncoder passwordEncoder; // Needed for hashing passwords
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
     public AuthService(AuthenticationManager authenticationManager,
@@ -38,16 +38,14 @@ public class AuthService {
 
     /**
      * Authenticates the user and generates a JWT.
-     * * @param loginRequest DTO with username/email and password.
+     * @param loginRequest DTO with username/email and password.
      * @return AuthResponse containing the access token.
-     * * @throws AuthenticationException (e.g., BadCredentialsException)
+     * * @throws AuthenticationException (e.g., BadCredentialsException) //TODO add the custom exceptions
      * if credentials are invalid. Spring Security handles throwing this.
      */
     public AuthResponse authenticateUser(LoginRequest loginRequest) {
 
-        // 1. Attempt to authenticate the user
-        // The AuthenticationManager uses the configured UserDetailsService and
-        // PasswordEncoder to validate the credentials against the database.
+        //Attempt to authenticate the user against the database
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         loginRequest.getEmail(),
@@ -55,14 +53,12 @@ public class AuthService {
                 )
         );
 
-        // 2. Set the Authentication object in the SecurityContext
-        // This is good practice, especially if the current thread needs the user details.
+        //Set the Authentication object in the SecurityContext - good for persisting session, but not required right now
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        // 3. Generate a JWT token using the authenticated object
+        //Generate a JWT token using the authenticated object
         String jwt = tokenProvider.generateToken(authentication);
 
-        // 4. Return the response DTO
         return new AuthResponse(jwt);
     }
 
@@ -80,21 +76,20 @@ public class AuthService {
             return new AuthResponse(false, "Username is already taken!");
         }
 
-        // 2. Create User object (assuming User is a JPA Entity)
         User user = new User(signUpRequest.getEmail(),
-                signUpRequest.getPassword(),
+                signUpRequest.getPassword(),  //only held in plaintext during creation, will be overwritten in next step
                 signUpRequest.getFirstName(),
                 signUpRequest.getLastName(),
                 LocalDateTime.now(),
                 LocalDateTime.now())
                 ;
 
-        // 3. Encode Password and set it on the user object
+        //Encode Password and set it on the user object
         user.setPassword(passwordEncoder.encode(signUpRequest.getPassword()));
 
-        // Note: You would typically set default roles here (e.g., ROLE_USER)
+        //TODO: set default role
         System.out.println(user.getFirstName() + " " + user.getLastName());
-        // 4. Save the new user to the database
+        //Save the new user to the database - without @Transactional gets race conditioned and doesnt fire
         userRepository.save(user);
 
         return new AuthResponse(true, "User registered successfully!");

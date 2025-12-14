@@ -1,5 +1,6 @@
-package com.learnnow.auth.security;
+package com.learnnow.auth.jwt;
 
+import com.learnnow.auth.service.CustomUserDetailsService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -30,38 +31,30 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     FilterChain filterChain) throws ServletException, IOException {
 
         try {
-            // 1. Get JWT from the request
             String jwt = getJwtFromRequest(request);
 
-            // 2. Validate token and load user if token is valid
+            //Validate token and load user if token is valid
             if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {
-
-                // Get username (subject) from token
                 String username = tokenProvider.getUsernameFromJWT(jwt);
-
-                // Load user data from the database
                 UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
-
-                // Create an authentication object
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                         userDetails,
                         null,
                         userDetails.getAuthorities()
                 );
 
-                // Set authentication details (like IP address, session ID, etc.)
+                // Set authentication details TODO add session here
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-                // 3. Set the Authentication in Spring Security's context
-                // This is what tells Spring Security the user is authenticated for this request.
+                //Set the Authentication in Spring Security's context
+                //This is what tells Spring Security the user is authenticated for this request.
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         } catch (Exception ex) {
-            // Log authentication failure
             logger.error("Could not set user authentication in security context", ex);
         }
 
-        // 4. Continue the filter chain
+        //Continue the filter chain
         filterChain.doFilter(request, response);
     }
 
@@ -70,8 +63,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
      */
     private String getJwtFromRequest(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");
-
-        // Check if the header starts with "Bearer " and extract the token
+        //Check if the header starts with "Bearer " and extract the token
+        //TODO why this works like that??
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
             return bearerToken.substring(7);
         }

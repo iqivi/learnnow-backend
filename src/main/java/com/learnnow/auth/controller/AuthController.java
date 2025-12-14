@@ -10,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/auth") // Base URL for authentication endpoints
+@RequestMapping("/api/auth")
 public class AuthController {
 
     private final AuthService authService;
@@ -54,9 +54,8 @@ public class AuthController {
             return new ResponseEntity<>(response, HttpStatus.OK);
 
         } catch (RuntimeException e) {
-            // 3. Handle authentication failure (e.g., InvalidCredentialsException)
-            // Note: In a real app, you would use a global exception handler for a clean response.
-            // For now, we return a 401 Unauthorized status.
+            // 3. Handle authentication failure
+            //TODO: change this to global exception handler
             return new ResponseEntity<>(
                     new AuthResponse(false, "Authentication failed: " + e.getMessage()),
                     HttpStatus.UNAUTHORIZED
