@@ -18,7 +18,7 @@ import java.util.Objects;
  */
 public class UserPrincipal implements UserDetails {
 
-    private int id;
+    private long id;
     private String firstName;
     private String lastName;
 
@@ -32,7 +32,7 @@ public class UserPrincipal implements UserDetails {
 
     private Collection<? extends GrantedAuthority> authorities;
 
-    public UserPrincipal(int id, String firstName, String lastName, String email, String password, Collection<? extends GrantedAuthority> authorities) {
+    public UserPrincipal(long id, String firstName, String lastName, String email, String password, Collection<? extends GrantedAuthority> authorities) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -98,7 +98,7 @@ public class UserPrincipal implements UserDetails {
     }
 
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 

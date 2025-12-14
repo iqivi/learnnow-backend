@@ -15,7 +15,6 @@ public class AuthController {
 
     private final AuthService authService;
 
-    // Dependency Injection via constructor
     @Autowired
     public AuthController(AuthService authService) {
         this.authService = authService;

@@ -55,9 +55,9 @@ public class JwtTokenProvider {
     public boolean validateToken(String authToken) {
         try {
             Jwts.parser()
-                    .verifyWith(getSigningKey()) // CORRECTED: Use .verifyWith() for validation
+                    .verifyWith(getSigningKey())
                     .build()
-                    .parseSignedClaims(authToken); // CORRECTED: Use .parseSignedClaims()
+                    .parseSignedClaims(authToken);
             return true;
         } catch (SignatureException ex) {
             // Log this: Invalid JWT signature
@@ -80,8 +80,8 @@ public class JwtTokenProvider {
         Claims claims = Jwts.parser()
                 .verifyWith(getSigningKey())
                 .build()
-                .parseSignedClaims(token) // CORRECTED: Use .parseSignedClaims()
-                .getPayload(); // Get the claims body
+                .parseSignedClaims(token)
+                .getPayload();
 
         return claims.getSubject();
     }
