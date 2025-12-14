@@ -1,4 +1,5 @@
 package com.learnnow.auth.security;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -15,8 +16,15 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 public class SecurityConfig {
 
+
     // Inject your UserDetailsService here (not shown for brevity)
 
+    @Autowired
+    private JwtAuthenticationEntryPoint unauthorizedHandler; // The entry point you created
+    @Autowired
+    private CustomUserDetailsService customUserDetailsService;
+    @Autowired
+    private JwtAuthenticationFilter jwtAuthenticationFilter;
     // Expose AuthenticationManager as a Bean so it can be autowired in AuthService
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
@@ -34,7 +42,7 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable()) // Disable CSRF for REST APIs
-                .exceptionHandling(e -> e.authenticationEntryPoint(jwtAuthenticationEntryPoint)) // Custom exception handler
+                .exceptionHandling(e -> e.authenticationEntryPoint(unauthorizedHandler)) // Custom exception handler
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
                 .authorizeHttpRequests(auth -> auth

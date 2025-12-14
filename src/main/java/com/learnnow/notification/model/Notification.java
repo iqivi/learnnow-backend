@@ -12,7 +12,7 @@ public class Notification {
     @JoinColumn(name = "recipient_id")
     private User recipient;
     private NotificationType type;
-    private boolean read;
+    private boolean isRead;
     private String text;
 
     public long getId() {
@@ -39,12 +39,12 @@ public class Notification {
         this.type = type;
     }
 
-    public boolean isRead() {
-        return read;
+    public boolean getIsRead() {
+        return isRead;
     }
 
-    public void setRead(boolean read) {
-        this.read = read;
+    public void setIsRead(boolean isRead) {
+        this.isRead = isRead;
     }
 
     public String getText() {

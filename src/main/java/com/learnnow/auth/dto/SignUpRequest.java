@@ -9,7 +9,7 @@ public class SignUpRequest {
 
     public SignUpRequest() {}
 
-    public SignUpRequest(String firstName, String lastName, String email, String password) {
+    public SignUpRequest(String email, String password, String firstName, String lastName) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;

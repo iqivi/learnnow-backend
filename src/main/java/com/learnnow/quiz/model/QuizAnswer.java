@@ -12,7 +12,7 @@ public class QuizAnswer {
     private QuizQuestion question;
     private String text;
     private boolean correct;
-    private int index;
+    private int lessonIndex;
 
     public int getId() {
         return id;
@@ -46,11 +46,11 @@ public class QuizAnswer {
         this.correct = correct;
     }
 
-    public int getIndex() {
-        return index;
+    public int getLessonIndex() {
+        return lessonIndex;
     }
 
-    public void setIndex(int index) {
-        this.index = index;
+    public void setLessonIndex(int lessonIndex) {
+        this.lessonIndex = lessonIndex;
     }
 }

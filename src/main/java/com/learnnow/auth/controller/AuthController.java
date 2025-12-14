@@ -7,10 +7,7 @@ import com.learnnow.auth.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth") // Base URL for authentication endpoints
@@ -39,12 +36,19 @@ public class AuthController {
      *     "tokenType": "Bearer"
      * }
      */
+    @GetMapping("/test")
+    public ResponseEntity<AuthResponse> test() {
+        AuthResponse response = new AuthResponse("test", "connection ok");
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> authenticateUser(@RequestBody LoginRequest loginRequest) {
 
         try {
             // 1. Call the service layer to perform authentication
             AuthResponse response = authService.authenticateUser(loginRequest);
+            response.setMessage("Login successful");
+            response.setSuccess(true);
 
             // 2. Return a 200 OK with the token in the body
             return new ResponseEntity<>(response, HttpStatus.OK);

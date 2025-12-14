@@ -6,6 +6,7 @@ import com.learnnow.auth.dto.SignUpRequest;
 import com.learnnow.user.model.User; // Assuming you have a User entity
 import com.learnnow.user.repository.UserRepository; // Assuming you have a User Repository
 import com.learnnow.auth.security.JwtTokenProvider;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -71,6 +72,7 @@ public class AuthService {
      * @param signUpRequest DTO containing new user details.
      * @return AuthResponse indicating success or failure.
      */
+    @Transactional
     public AuthResponse registerUser(SignUpRequest signUpRequest) {
 
         // 1. Validation Checks
@@ -79,10 +81,10 @@ public class AuthService {
         }
 
         // 2. Create User object (assuming User is a JPA Entity)
-        User user = new User(signUpRequest.getFirstName(),
+        User user = new User(signUpRequest.getEmail(),
+                signUpRequest.getPassword(),
+                signUpRequest.getFirstName(),
                 signUpRequest.getLastName(),
-                signUpRequest.getEmail(),
-                signUpRequest.getPassword(), // password will be overwritten
                 LocalDateTime.now(),
                 LocalDateTime.now())
                 ;
@@ -91,7 +93,7 @@ public class AuthService {
         user.setPassword(passwordEncoder.encode(signUpRequest.getPassword()));
 
         // Note: You would typically set default roles here (e.g., ROLE_USER)
-
+        System.out.println(user.getFirstName() + " " + user.getLastName());
         // 4. Save the new user to the database
         userRepository.save(user);
 
