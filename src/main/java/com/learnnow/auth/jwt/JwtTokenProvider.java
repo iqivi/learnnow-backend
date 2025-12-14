@@ -3,7 +3,7 @@ package com.learnnow.auth.jwt;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import io.jsonwebtoken.security.SignatureException; // Important new import for validation
+import io.jsonwebtoken.security.SignatureException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
@@ -18,9 +18,7 @@ public class JwtTokenProvider {
     private String jwtSecret;
 
     @Value("${app.jwtExpirationMs}")
-    private long jwtExpirationInMs; // Changed to long for safety
-
-    // --- Core JWT Methods ---
+    private long jwtExpirationInMs;
 
     /**
      * Helper method to get the signing key (SecretKey).
