@@ -1,0 +1,11 @@
+app:
+  jwtSecret: "RandomLongStringRandomLongStringRandomLongStringRandomLongStringRandomLongStringRandomLongString"
+  jwtExpirationMs: 604800000 # 7 days in milliseconds (604,800,000)
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: update
+  datasource:
+    url: jdbc:mysql://localhost:3306/byt
+    username: root
+    password: Mar10ram

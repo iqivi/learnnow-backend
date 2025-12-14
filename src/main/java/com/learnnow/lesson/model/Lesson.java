@@ -11,7 +11,7 @@ public class Lesson {
     @ManyToOne
     @JoinColumn(name = "course_id")
     private Course course;
-    private int index;
+    private int lessonIndex;
     private String content;
 
     public int getId() {
@@ -30,12 +30,12 @@ public class Lesson {
         this.course = course;
     }
 
-    public int getIndex() {
-        return index;
+    public int getLessonIndex() {
+        return lessonIndex;
     }
 
-    public void setIndex(int index) {
-        this.index = index;
+    public void setLessonIndex(int lessonIndex) {
+        this.lessonIndex = lessonIndex;
     }
 
     public String getContent() {

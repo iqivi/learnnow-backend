@@ -24,6 +24,16 @@ public class User {
     private UserRole role;
     private boolean active;
 
+    public User() {}
+    public User(String email, String password, String firstName, String lastName, LocalDateTime creationTime, LocalDateTime lastLoginTime) {
+        this.email = email;
+        this.password = password;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.creationTime = creationTime;
+        this.lastLoginTime = lastLoginTime;
+    }
+
     public int getId() {
         return id;
     }

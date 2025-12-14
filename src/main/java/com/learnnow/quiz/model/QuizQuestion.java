@@ -12,7 +12,7 @@ public class QuizQuestion {
     private Quiz quiz;
     private String question;
     private QuizQuestionType type;
-    private int index;
+    private int lessonIndex;
     private int points;
 
     public int getId() {
@@ -47,12 +47,12 @@ public class QuizQuestion {
         this.type = type;
     }
 
-    public int getIndex() {
-        return index;
+    public int getLessonIndex() {
+        return lessonIndex;
     }
 
-    public void setIndex(int index) {
-        this.index = index;
+    public void setLessonIndex(int lessonIndex) {
+        this.lessonIndex = lessonIndex;
     }
 
     public int getPoints() {
