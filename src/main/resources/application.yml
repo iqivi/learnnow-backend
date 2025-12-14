@@ -8,4 +8,4 @@ spring:
   datasource:
     url: jdbc:mysql://localhost:3306/byt
     username: root
-    password: Mar10ram
+    password: Mar10ram #S73jzWCY3
