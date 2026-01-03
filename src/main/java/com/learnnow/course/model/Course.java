@@ -7,7 +7,7 @@ import jakarta.persistence.*;
 public class Course {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
     private String title;
     private String description;
     private float price;
@@ -16,11 +16,11 @@ public class Course {
     @JoinColumn(name = "author_id")
     private User author;
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
