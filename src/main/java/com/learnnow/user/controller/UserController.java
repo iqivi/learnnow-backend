@@ -8,11 +8,17 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/user")
 public class UserController {
+    //get all users
+    //put edit (/user/{id}) - admit
+    //put edit (/user/{id}) - user
+    //delete user (id) - admin
+    //delete user (id) - user
     private final UserService userService;
 
     UserController(UserService userService) {
         this.userService = userService;
     }
+
 
     @GetMapping("/{id}")
     public ResponseEntity<User> getUser(@PathVariable Long id) {
