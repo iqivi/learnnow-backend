@@ -4,6 +4,7 @@ import com.learnnow.auth.dto.AuthResponse;
 import com.learnnow.auth.dto.LoginRequest;
 import com.learnnow.auth.dto.SignUpRequest;
 import com.learnnow.user.model.User;
+import com.learnnow.user.model.UserRole;
 import com.learnnow.user.repository.UserRepository;
 import com.learnnow.auth.jwt.JwtTokenProvider;
 import jakarta.transaction.Transactional;
@@ -86,7 +87,7 @@ public class AuthService {
 
         //Encode Password and set it on the user object
         user.setPassword(passwordEncoder.encode(signUpRequest.getPassword()));
-
+        user.setRole(UserRole.USER);
         //TODO: set default role
         System.out.println(user.getFirstName() + " " + user.getLastName());
         //Save the new user to the database - without @Transactional gets race conditioned and doesnt fire

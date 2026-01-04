@@ -3,10 +3,15 @@ package com.learnnow.auth.controller;
 import com.learnnow.auth.dto.LoginRequest;
 import com.learnnow.auth.dto.AuthResponse;
 import com.learnnow.auth.dto.SignUpRequest;
+import com.learnnow.auth.security.UserPrincipal;
 import com.learnnow.auth.service.AuthService;
+import com.learnnow.user.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.SpringVersion;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -20,6 +25,8 @@ public class AuthController {
         this.authService = authService;
     }
 
+    @Autowired
+    private UserService userSerivce;
     /**
      * Handles POST requests to /api/auth/login.
      * Expects a JSON payload in the body matching the LoginRequest DTO.
@@ -40,26 +47,19 @@ public class AuthController {
         AuthResponse response = new AuthResponse("test", "connection ok");
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
+
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> authenticateUser(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<AuthResponse> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
 
-        try {
-            // 1. Call the service layer to perform authentication
-            AuthResponse response = authService.authenticateUser(loginRequest);
-            response.setMessage("Login successful");
-            response.setSuccess(true);
+        AuthResponse response = authService.authenticateUser(loginRequest);
 
-            // 2. Return a 200 OK with the token in the body
-            return new ResponseEntity<>(response, HttpStatus.OK);
+        // 2. Setting extra fields
+        response.setMessage("Login successful");
+        response.setSuccess(true);
 
-        } catch (RuntimeException e) {
-            // 3. Handle authentication failure
-            //TODO: change this to global exception handler
-            return new ResponseEntity<>(
-                    new AuthResponse(false, "Authentication failed: " + e.getMessage()),
-                    HttpStatus.UNAUTHORIZED
-            );
-        }
+        // 3. Just return the object. Spring defaults to a 200 OK status.
+        return ResponseEntity.ok(response);
     }
 
     /**
@@ -67,16 +67,17 @@ public class AuthController {
      * Expects a JSON payload in the body matching the SignUpRequest DTO.
      */
     @PostMapping("/register")
-    public ResponseEntity<AuthResponse> registerUser(@RequestBody SignUpRequest signUpRequest) {
-
-        AuthResponse response = authService.registerUser(signUpRequest);
-
-        // If the service returns a failed response, return a 400 Bad Request
-        if (!response.getSuccess()) {
-            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-        }
-
-        // If registration is successful, return a 201 Created status
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
+    public ResponseEntity<AuthResponse> register(@Valid @RequestBody SignUpRequest signUpRequest) {
+        return new ResponseEntity<>(authService.registerUser(signUpRequest), HttpStatus.CREATED);
     }
+
+    @GetMapping("/rolecheck")
+    public ResponseEntity<String> roleCheck(@AuthenticationPrincipal UserPrincipal currentUser) {
+        return ResponseEntity.ok(userSerivce.getUser(0L).getRole().toString());
+    }
+//   /* @GetMapping("/confirm")
+//    public ResponseEntity<String> confirm(@RequestParam String token) {
+//        authService.confirmUser(token);
+//        return ResponseEntity.ok("Account verified successfully!");
+//    }*/
 }
