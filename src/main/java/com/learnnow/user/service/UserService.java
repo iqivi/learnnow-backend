@@ -61,13 +61,8 @@ public class UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        // 1. Check if the user is currently an ADMIN
         if (user.getRole() == UserRole.ADMIN) {
-
-            // 2. Check if the NEW role is NOT Admin (meaning they are being demoted)
             if (newRole != UserRole.ADMIN) {
-
-                // 3. Count total admins in the system
                 long adminCount = userRepository.countByRole(UserRole.ADMIN);
 
                 if (adminCount <= 1) {

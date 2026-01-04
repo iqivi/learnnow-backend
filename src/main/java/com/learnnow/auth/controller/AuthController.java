@@ -5,6 +5,8 @@ import com.learnnow.auth.dto.AuthResponse;
 import com.learnnow.auth.dto.SignUpRequest;
 import com.learnnow.auth.security.UserPrincipal;
 import com.learnnow.auth.service.AuthService;
+import com.learnnow.user.model.User;
+import com.learnnow.user.repository.UserRepository;
 import com.learnnow.user.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,14 +21,12 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final AuthService authService;
-
     @Autowired
     public AuthController(AuthService authService) {
         this.authService = authService;
     }
 
-    @Autowired
-    private UserService userSerivce;
+
     /**
      * Handles POST requests to /api/auth/login.
      * Expects a JSON payload in the body matching the LoginRequest DTO.
@@ -69,15 +69,12 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<AuthResponse> register(@Valid @RequestBody SignUpRequest signUpRequest) {
         return new ResponseEntity<>(authService.registerUser(signUpRequest), HttpStatus.CREATED);
+
     }
 
-    @GetMapping("/rolecheck")
-    public ResponseEntity<String> roleCheck(@AuthenticationPrincipal UserPrincipal currentUser) {
-        return ResponseEntity.ok(userSerivce.getUser(0L).getRole().toString());
+
+    @GetMapping("/confirm")
+    public ResponseEntity<AuthResponse> confirmUser(@RequestParam String token) {
+        return new ResponseEntity<>(authService.confirmUser(token), HttpStatus.OK);
     }
-//   /* @GetMapping("/confirm")
-//    public ResponseEntity<String> confirm(@RequestParam String token) {
-//        authService.confirmUser(token);
-//        return ResponseEntity.ok("Account verified successfully!");
-//    }*/
 }

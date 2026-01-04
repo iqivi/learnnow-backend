@@ -7,12 +7,14 @@ import com.learnnow.user.dto.UserUpdateRequest;
 import com.learnnow.user.model.User;
 import com.learnnow.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/user")
@@ -69,6 +71,22 @@ public class UserController {
         return userService.updateUserRole(id, request.getNewRole());
     }
 
-
+    @GetMapping("/debug/me")
+    public ResponseEntity<AuthResponse> showUser(@AuthenticationPrincipal UserPrincipal currentUser) {
+        String name = currentUser.getEmail();
+        return ResponseEntity.ok(new AuthResponse(true, name));
+    }
+    @GetMapping("/debug/role")
+    public ResponseEntity<?> getMyRole(@AuthenticationPrincipal UserPrincipal currentUser) {
+        if (currentUser == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No user is logged in");
+        }
+        return ResponseEntity.ok(Map.of(
+                "username", currentUser.getEmail(),
+                "id", currentUser.getId(),
+                "authorities", currentUser.getAuthorities(), // Returns the list of roles with ROLE_ prefix
+                "rawRole", currentUser.getRole() // Assuming you kept the enum field in UserPrincipal
+        ));
+    }
 
 }

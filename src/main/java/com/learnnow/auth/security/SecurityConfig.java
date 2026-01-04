@@ -25,9 +25,10 @@ public class SecurityConfig { //DO NOT change anything here! Needs all the weird
     private JwtAuthenticationEntryPoint unauthorizedHandler;
     @Autowired
     private CustomUserDetailsService customUserDetailsService;
-    @Autowired
-    private JwtAuthenticationFilter jwtAuthenticationFilter;
-
+    @Bean
+    public JwtAuthenticationFilter jwtAuthenticationFilter() {
+        return new JwtAuthenticationFilter();
+    }
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
@@ -53,7 +54,7 @@ public class SecurityConfig { //DO NOT change anything here! Needs all the weird
                 );
 
         // Register your custom filter to run before the standard Spring Security UsernamePasswordAuthenticationFilter
-        http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 
 
         return http.build();

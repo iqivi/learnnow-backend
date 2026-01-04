@@ -3,20 +3,27 @@ package com.learnnow.auth.service;
 import com.learnnow.auth.dto.AuthResponse;
 import com.learnnow.auth.dto.LoginRequest;
 import com.learnnow.auth.dto.SignUpRequest;
+import com.learnnow.auth.security.UserPrincipal;
 import com.learnnow.user.model.User;
 import com.learnnow.user.model.UserRole;
 import com.learnnow.user.repository.UserRepository;
 import com.learnnow.auth.jwt.JwtTokenProvider;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Service
 public class AuthService {
@@ -46,21 +53,26 @@ public class AuthService {
      */
     public AuthResponse authenticateUser(LoginRequest loginRequest) {
 
-        //Attempt to authenticate the user against the database
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        loginRequest.getEmail(),
-                        loginRequest.getPassword()
-                )
-        );
+        try{
+            //Attempt to authenticate the user against the database
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            loginRequest.getEmail(),
+                            loginRequest.getPassword()
+                    )
+            );
 
-        //Set the Authentication object in the SecurityContext - good for persisting session, but not required right now
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+            //Set the Authentication object in the SecurityContext - good for persisting session, but not required right now
+            SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        //Generate a JWT token using the authenticated object
-        String jwt = tokenProvider.generateToken(authentication);
-
-        return new AuthResponse(jwt);
+            //Generate a JWT token using the authenticated object
+            String jwt = tokenProvider.generateToken(authentication);
+            return new AuthResponse(jwt);
+        }catch (DisabledException ex) {
+            throw new RuntimeException("Please confirm your email before logging in.");
+        } catch (BadCredentialsException ex) {
+            throw new RuntimeException("Invalid username or password.");
+        }
     }
 
     /**
@@ -88,11 +100,29 @@ public class AuthService {
         //Encode Password and set it on the user object
         user.setPassword(passwordEncoder.encode(signUpRequest.getPassword()));
         user.setRole(UserRole.USER);
-        //TODO: set default role
-        System.out.println(user.getFirstName() + " " + user.getLastName());
         //Save the new user to the database - without @Transactional gets race conditioned and doesnt fire
         userRepository.save(user);
 
+        String token = UUID.randomUUID().toString();
+        user.setConfirmationToken(token);
+        userRepository.save(user);
+
+        String link = "http://localhost:8080/api/auth/confirm?token=" + token;
+        System.out.println(link);
+        //emailService.sendEmail(user.getEmail(), "Confirm your account", "Click here: " + link);
+
         return new AuthResponse(true, "User registered successfully!");
     }
+
+    @Transactional
+    public AuthResponse confirmUser(String token) {
+        User user = userRepository.findByConfirmationToken(token)
+                .orElseThrow(() -> new RuntimeException("Invalid Token"));
+
+        user.setEnabled(true);
+        user.setConfirmationToken(null);
+        userRepository.save(user);
+        return new AuthResponse(true, "Account verified successfully!");
+    }
+
 }
