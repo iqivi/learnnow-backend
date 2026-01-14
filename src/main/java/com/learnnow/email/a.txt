@@ -1,0 +1,23 @@
+curl -X GET http://localhost:8080/api/users/debug/role \
+     -H "Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJtMTNtb3JAZ21haWwuY29tIiwiaWF0IjoxNzY4NDI3MjgxLCJleHAiOjE3NjkwMzIwODF9.YsO14vcjxwEvuiXlygMO2vH5fC9sTaTpPNywlRUteDA" \
+     -H "Content-Type: application/json"
+
+
+curl -X GET http://localhost:8080/api/auth/confirm \
+    -H "Authorization: Bearer e2181cee-6b13-47c4-90ad-594e5464613d" \
+    -H "Content-Type: application/json"
+
+curl -X GET "http://localhost:8080/api/auth/confirm?token=e2181cee-6b13-47c4-90ad-594e5464613d"
+
+curl -X POST http://localhost:8080/api/auth/forgot-password \
+     -H "Content-Type: application/json" \
+     -d '{"email": "m13mor@gmail.com"}'
+
+curl -X POST http://localhost:8080/api/auth/reset-password \
+     -H "Content-Type: application/json" \
+     -d '{
+       "token": "4c12e716-9d3f-49a4-be16-6c3cbe2a0518",
+       "newPassword": "SecurePassword123!"
+     }'
+
+http://localhost:8080/api/auth/reset-password?token=4c12e716-9d3f-49a4-be16-6c3cbe2a0518

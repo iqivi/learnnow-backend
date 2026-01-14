@@ -1,8 +1,6 @@
 package com.learnnow.auth.controller;
 
-import com.learnnow.auth.dto.LoginRequest;
-import com.learnnow.auth.dto.AuthResponse;
-import com.learnnow.auth.dto.SignUpRequest;
+import com.learnnow.auth.dto.*;
 import com.learnnow.auth.security.UserPrincipal;
 import com.learnnow.auth.service.AuthService;
 import com.learnnow.user.model.User;
@@ -21,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final AuthService authService;
+
     @Autowired
     public AuthController(AuthService authService) {
         this.authService = authService;
@@ -32,14 +31,14 @@ public class AuthController {
      * Expects a JSON payload in the body matching the LoginRequest DTO.
      * request:
      * {
-     *     "usernameOrEmail": "testuser@example.com",
-     *     "password": "password123"
+     * "usernameOrEmail": "testuser@example.com",
+     * "password": "password123"
      * }
      * response:
      * {
-     *     "accessToken": "eyJhbGciOiJIUzI1NiI...",
-     *     "message": "Successfully logged in!",
-     *     "tokenType": "Bearer"
+     * "accessToken": "eyJhbGciOiJIUzI1NiI...",
+     * "message": "Successfully logged in!",
+     * "tokenType": "Bearer"
      * }
      */
     @GetMapping("/test")
@@ -77,4 +76,17 @@ public class AuthController {
     public ResponseEntity<AuthResponse> confirmUser(@RequestParam String token) {
         return new ResponseEntity<>(authService.confirmUser(token), HttpStatus.OK);
     }
+
+    @PostMapping("/forgot-password")
+    public AuthResponse initiateReset(@Valid @RequestBody ForgotPasswordRequest request) {
+        authService.requestPasswordReset(request.getEmail());
+        return new AuthResponse(true, "Reset link sent to your email.");
+    }
+
+    @PostMapping("/password-reset")
+    public AuthResponse completeReset(@Valid @RequestBody ResetPasswordRequest request) {
+        authService.resetPassword(request.getToken(), request.getNewPassword());
+        return new AuthResponse(true, "Password has been successfully updated.");
+    }
+
 }

@@ -4,12 +4,14 @@ import com.learnnow.auth.dto.AuthResponse;
 import com.learnnow.auth.dto.LoginRequest;
 import com.learnnow.auth.dto.SignUpRequest;
 import com.learnnow.auth.security.UserPrincipal;
+import com.learnnow.email.service.EmailService;
 import com.learnnow.user.model.User;
 import com.learnnow.user.model.UserRole;
 import com.learnnow.user.repository.UserRepository;
 import com.learnnow.auth.jwt.JwtTokenProvider;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -32,16 +34,22 @@ public class AuthService {
     private final JwtTokenProvider tokenProvider;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final EmailService emailService;
+    @Value("${app.backend-link}")
+    private String backLink;
+    @Value("${app.frontend-link}")
+    private String frontLink;
 
     @Autowired
     public AuthService(AuthenticationManager authenticationManager,
                        JwtTokenProvider tokenProvider,
                        UserRepository userRepository,
-                       PasswordEncoder passwordEncoder) {
+                       PasswordEncoder passwordEncoder, EmailService emailService) {
         this.authenticationManager = authenticationManager;
         this.tokenProvider = tokenProvider;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.emailService = emailService;
     }
 
     /**
@@ -97,21 +105,27 @@ public class AuthService {
                 LocalDateTime.now())
                 ;
 
-        //Encode Password and set it on the user object
         user.setPassword(passwordEncoder.encode(signUpRequest.getPassword()));
         user.setRole(UserRole.USER);
-        //Save the new user to the database - without @Transactional gets race conditioned and doesnt fire
         userRepository.save(user);
 
         String token = UUID.randomUUID().toString();
         user.setConfirmationToken(token);
         userRepository.save(user);
 
-        String link = "http://localhost:8080/api/auth/confirm?token=" + token;
-        System.out.println(link);
-        //emailService.sendEmail(user.getEmail(), "Confirm your account", "Click here: " + link);
+
+        System.out.println(token);
+        sendConfirmationEmail(user);
 
         return new AuthResponse(true, "User registered successfully!");
+    }
+
+    public void sendConfirmationEmail(User user) {
+        org.thymeleaf.context.Context context = new org.thymeleaf.context.Context();
+        context.setVariable("name", user.getFirstName());
+        context.setVariable("confirmationLink", backLink + "api/auth/confirm?token=" + user.getConfirmationToken());
+
+        emailService.sendHtmlEmail(user.getEmail(), "Welcome! Confirm your account", "email-confirmation", context);
     }
 
     @Transactional
@@ -125,4 +139,34 @@ public class AuthService {
         return new AuthResponse(true, "Account verified successfully!");
     }
 
+    public void requestPasswordReset(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Email not found"));
+
+        String token = UUID.randomUUID().toString();
+        user.setResetPasswordToken(token);
+        user.setTokenExpiry(LocalDateTime.now().plusHours(1)); // Expire in 1 hour
+        userRepository.save(user);
+
+        org.thymeleaf.context.Context context = new org.thymeleaf.context.Context();
+        context.setVariable("name", user.getFirstName());
+        context.setVariable("resetLink", frontLink + "api/auth/reset-password?token=" + token);
+
+        emailService.sendHtmlEmail(user.getEmail(), "Password Reset Request", "password-reset", context);
+    }
+
+    @Transactional
+    public void resetPassword(String token, String newPassword) {
+        User user = userRepository.findByResetPasswordToken(token)
+                .orElseThrow(() -> new RuntimeException("Invalid token"));
+
+        if (user.getTokenExpiry().isBefore(LocalDateTime.now())) {
+            throw new RuntimeException("Token expired");
+        }
+
+        user.setPassword(passwordEncoder.encode(newPassword));
+        user.setResetPasswordToken(null);
+        user.setTokenExpiry(null);
+        userRepository.save(user);
+    }
 }

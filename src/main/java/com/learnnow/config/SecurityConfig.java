@@ -1,4 +1,4 @@
-package com.learnnow.auth.security;
+package com.learnnow.config;
 import com.learnnow.auth.jwt.JwtAuthenticationEntryPoint;
 import com.learnnow.auth.jwt.JwtAuthenticationFilter;
 import com.learnnow.auth.service.CustomUserDetailsService;
