@@ -13,8 +13,8 @@ spring:
     hibernate:
       ddl-auto: update
   datasource:
-    url: jdbc:mysql://localhost:3306/byt
-    username: ${DB_USERNAME}
+    url: jdbc:mysql://${DB_HOST:localhost}:3306/${DB_NAME:byt}
+    username: ${DB_USER:root}
     password: ${DB_PASSWORD}
   mail:
     host: smtp.gmail.com
