@@ -18,9 +18,11 @@ import java.util.Objects;
  */
 public class UserPrincipal implements UserDetails {
 
-    private int id;
+    private Long id;
     private String firstName;
     private String lastName;
+    private UserRole userRole;
+    private boolean enabled;
 
     //Using @JsonIgnore to prevent the password from being serialized and exposed in APIs
     //TODO can email be hidden if we use it as username
@@ -32,12 +34,14 @@ public class UserPrincipal implements UserDetails {
 
     private Collection<? extends GrantedAuthority> authorities;
 
-    public UserPrincipal(int id, String firstName, String lastName, String email, String password, Collection<? extends GrantedAuthority> authorities) {
+    public UserPrincipal(Long id, String firstName, String lastName, UserRole userRole, String email, String password, boolean enabled, Collection<? extends GrantedAuthority> authorities) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
+        this.userRole = userRole;
         this.email = email;
         this.password = password;
+        this.enabled = enabled;
         this.authorities = authorities;
     }
 
@@ -55,8 +59,10 @@ public class UserPrincipal implements UserDetails {
                 user.getId(),
                 user.getFirstName(),
                 user.getLastName(),
+                user.getRole(),
                 user.getEmail(),
                 user.getPassword(),
+                user.isEnabled(),
                 authorities
         );
     }
@@ -93,12 +99,9 @@ public class UserPrincipal implements UserDetails {
     }
 
     @Override
-    public boolean isEnabled() {
-        return true; // Simple implementation: account is always enabled
-    }
+    public boolean isEnabled() {return enabled;}
 
-
-    public int getId() {
+    public long getId() {
         return id;
     }
 
@@ -113,6 +116,8 @@ public class UserPrincipal implements UserDetails {
     public String getLastName() {
         return lastName;
     }
+
+    public UserRole getRole() {return userRole;}
 
     // Custom equality check required by Spring Security for comparison WHY THO???
     @Override

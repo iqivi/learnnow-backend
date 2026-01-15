@@ -1,4 +1,4 @@
-package com.learnnow.auth.security;
+package com.learnnow.config;
 import com.learnnow.auth.jwt.JwtAuthenticationEntryPoint;
 import com.learnnow.auth.jwt.JwtAuthenticationFilter;
 import com.learnnow.auth.service.CustomUserDetailsService;
@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -17,15 +18,17 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 public class SecurityConfig { //DO NOT change anything here! Needs all the weird setup to handle authentication
 
     @Autowired
     private JwtAuthenticationEntryPoint unauthorizedHandler;
     @Autowired
     private CustomUserDetailsService customUserDetailsService;
-    @Autowired
-    private JwtAuthenticationFilter jwtAuthenticationFilter;
-
+    @Bean
+    public JwtAuthenticationFilter jwtAuthenticationFilter() {
+        return new JwtAuthenticationFilter();
+    }
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
@@ -51,7 +54,7 @@ public class SecurityConfig { //DO NOT change anything here! Needs all the weird
                 );
 
         // Register your custom filter to run before the standard Spring Security UsernamePasswordAuthenticationFilter
-        http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 
 
         return http.build();

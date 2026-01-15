@@ -4,6 +4,7 @@ package com.learnnow.auth.service;
 import com.learnnow.auth.security.UserPrincipal;
 import com.learnnow.user.model.User;
 import com.learnnow.user.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -20,6 +21,7 @@ public class CustomUserDetailsService implements UserDetailsService { //implemen
      * Locates the user based on the username. This is required by Spring Security
      * used during authentication (in the login process) and during token validation.
      */
+    @Transactional
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         User user = userRepository.findByEmail(email)
@@ -27,4 +29,5 @@ public class CustomUserDetailsService implements UserDetailsService { //implemen
 
         return UserPrincipal.create(user);
     }
+
 }

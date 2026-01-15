@@ -19,10 +19,12 @@ public class User {
     private String lastName;
     private LocalDateTime creationTime;
     private LocalDateTime lastLoginTime;
-    @Nullable
-    private String activationCode;
     private UserRole role;
     private boolean active;
+    private boolean enabled = false; // User cannot login until true
+    private String confirmationToken;
+    private String resetPasswordToken;
+    private LocalDateTime tokenExpiry;
 
     public User() {}
     public User(String email, String password, String firstName, String lastName, LocalDateTime creationTime, LocalDateTime lastLoginTime) {
@@ -90,14 +92,6 @@ public class User {
         this.lastLoginTime = lastLoginTime;
     }
 
-    public String getActivationCode() {
-        return activationCode;
-    }
-
-    public void setActivationCode(String activationCode) {
-        this.activationCode = activationCode;
-    }
-
     public UserRole getRole() {
         return role;
     }
@@ -112,5 +106,37 @@ public class User {
 
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public String getConfirmationToken() {
+        return confirmationToken;
+    }
+
+    public void setConfirmationToken(String confirmationToken) {
+        this.confirmationToken = confirmationToken;
+    }
+
+    public String getResetPasswordToken() {
+        return resetPasswordToken;
+    }
+
+    public void setResetPasswordToken(String resetPasswordToken) {
+        this.resetPasswordToken = resetPasswordToken;
+    }
+
+    public LocalDateTime getTokenExpiry() {
+        return tokenExpiry;
+    }
+
+    public void setTokenExpiry(LocalDateTime tokenExpiry) {
+        this.tokenExpiry = tokenExpiry;
     }
 }
