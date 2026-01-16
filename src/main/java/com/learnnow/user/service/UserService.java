@@ -8,8 +8,10 @@ import com.learnnow.user.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class UserService {
@@ -73,5 +75,30 @@ public class UserService {
 
         user.setRole(newRole);
         return userRepository.save(user);
+    }
+
+    @Transactional
+    public User processOAuthPostLogin(String email, String name) {
+        String [] nameArray = name.split(" ");
+        String firstName = nameArray[0];
+        String lastName = nameArray[1];
+        return userRepository.findByEmail(email)
+                .map(existingUser -> {
+                    // Optional: Update name if it changed on Google
+                    existingUser.setFirstName(firstName);
+                    existingUser.setLastName(lastName);
+                    return userRepository.save(existingUser);
+                })
+                .orElseGet(() -> {
+                    // Create a new user if they don't exist
+                    User newUser = new User();
+                    newUser.setEmail(email);
+                    newUser.setFirstName(firstName);
+                    newUser.setLastName(lastName);
+                    newUser.setRole(UserRole.USER);
+                    newUser.setEnabled(true);
+                    newUser.setPassword(UUID.randomUUID().toString());
+                    return userRepository.save(newUser);
+                });
     }
 }
