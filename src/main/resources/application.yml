@@ -1,8 +1,8 @@
 app:
   jwtSecret: ${JWT_SECRET}
   jwtExpirationMs: 604800000 # 7 days in milliseconds (604,800,000)
-  backend-link: "http://localhost:8080/"
-  frontend-link: "http://localhost:3000/"
+  backend-link: "http://localhost:8081/"
+  frontend-link: "http://localhost:8099/"
   mail:
     from-name: "LearnNow"
     from-email: ${MAIL_USERNAME}
@@ -13,7 +13,7 @@ spring:
     hibernate:
       ddl-auto: update
   datasource:
-    url: jdbc:mysql://${DB_HOST:localhost}:3306/${DB_NAME:byt}
+    url: jdbc:mysql://${DB_HOST:localhost}:${MYSQL_PORT:3307}/${DB_NAME:byt}
     username: ${DB_USER:root}
     password: ${DB_PASSWORD}
   mail:
