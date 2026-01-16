@@ -1,17 +1,11 @@
 package com.learnnow.auth.controller;
 
 import com.learnnow.auth.dto.*;
-import com.learnnow.auth.security.UserPrincipal;
 import com.learnnow.auth.service.AuthService;
-import com.learnnow.user.model.User;
-import com.learnnow.user.repository.UserRepository;
-import com.learnnow.user.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.SpringVersion;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -50,14 +44,9 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
-
         AuthResponse response = authService.authenticateUser(loginRequest);
-
-        // 2. Setting extra fields
         response.setMessage("Login successful");
         response.setSuccess(true);
-
-        // 3. Just return the object. Spring defaults to a 200 OK status.
         return ResponseEntity.ok(response);
     }
 

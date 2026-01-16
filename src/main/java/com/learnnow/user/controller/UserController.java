@@ -19,37 +19,32 @@ import java.util.Map;
 @RestController
 @RequestMapping("/user")
 public class UserController {
-    //get all users
-    //put edit (/user/{id}) - admit
-    //put edit (/user/{id}) - user
-    //delete user (id) - admin
-    //delete user (id) - user
 
     @Autowired
     private UserService userService;
 
-    // 1. Get all users (ADMIN ONLY)
+    //Get all users (ADMIN ONLY)
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
     public List<User> listAll() {
         return userService.getAllUsers();
     }
 
-    // 2. Edit details of ANY user (ADMIN ONLY)
+    //Edit details of ANY user (ADMIN ONLY)
     @PutMapping("/{id}/admin")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<User> adminUpdateUser(@PathVariable Long id, @RequestBody UserUpdateRequest request) {
         return ResponseEntity.ok(userService.updateUser(id, request));
     }
 
-    // 3. Edit details of the SELF (Authenticated User)
+    //Edit details of the SELF (Authenticated User)
     @PutMapping("/me")
     public ResponseEntity<User> updateSelf(@AuthenticationPrincipal UserPrincipal currentUser,
                                            @RequestBody UserUpdateRequest request) {
         return ResponseEntity.ok(userService.updateUser(currentUser.getId(), request));
     }
 
-    // 4. Delete ANY user (ADMIN ONLY)
+    // Delete ANY user (ADMIN ONLY)
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<AuthResponse> adminDeleteUser(@PathVariable Long id) {
@@ -57,7 +52,7 @@ public class UserController {
         return ResponseEntity.ok(new AuthResponse(true, "User deleted by admin"));
     }
 
-    // 5. Delete SELF account
+    //Delete SELF account
     @DeleteMapping("/me")
     public ResponseEntity<AuthResponse> deleteSelf(@AuthenticationPrincipal UserPrincipal currentUser) {
         userService.deleteUser(currentUser.getId());
@@ -67,26 +62,8 @@ public class UserController {
     @PatchMapping("/{id}/role")
     @PreAuthorize("hasRole('ADMIN')")
     public User changeRole(@PathVariable Long id, @RequestBody RoleUpdateRequest request) {
-        // If 'id' is not found, Service throws RuntimeException, handled by Global Handler
         return userService.updateUserRole(id, request.getNewRole());
     }
 
-    @GetMapping("/debug/me")
-    public ResponseEntity<AuthResponse> showUser(@AuthenticationPrincipal UserPrincipal currentUser) {
-        String name = currentUser.getEmail();
-        return ResponseEntity.ok(new AuthResponse(true, name));
-    }
-    @GetMapping("/debug/role")
-    public ResponseEntity<?> getMyRole(@AuthenticationPrincipal UserPrincipal currentUser) {
-        if (currentUser == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No user is logged in");
-        }
-        return ResponseEntity.ok(Map.of(
-                "username", currentUser.getEmail(),
-                "id", currentUser.getId(),
-                "authorities", currentUser.getAuthorities(), // Returns the list of roles with ROLE_ prefix
-                "rawRole", currentUser.getRole() // Assuming you kept the enum field in UserPrincipal
-        ));
-    }
 
 }

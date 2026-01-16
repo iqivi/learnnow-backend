@@ -7,8 +7,6 @@ import com.learnnow.user.model.UserRole;
 import com.learnnow.user.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -49,7 +47,6 @@ public class UserService {
         user.setFirstName(request.getFirstName());
         user.setLastName(request.getLastName());
         user.setEmail(request.getEmail());
-        // Do NOT update password here; create a separate 'change-password' flow
         return userRepository.save(user);
     }
 
@@ -84,13 +81,11 @@ public class UserService {
         String lastName = nameArray[1];
         return userRepository.findByEmail(email)
                 .map(existingUser -> {
-                    // Optional: Update name if it changed on Google
                     existingUser.setFirstName(firstName);
                     existingUser.setLastName(lastName);
                     return userRepository.save(existingUser);
                 })
                 .orElseGet(() -> {
-                    // Create a new user if they don't exist
                     User newUser = new User();
                     newUser.setEmail(email);
                     newUser.setFirstName(firstName);

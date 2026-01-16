@@ -1,6 +1,6 @@
 package com.learnnow.auth.dto;
 
-public class AuthResponse { //reusable dto for returning requests to the client
+public class AuthResponse {
 
     private String accessToken;
     private String message;
@@ -19,7 +19,6 @@ public class AuthResponse { //reusable dto for returning requests to the client
         this.message = message;
     }
 
-    // Getters and Setters
     public String getAccessToken() {
         return accessToken;
     }

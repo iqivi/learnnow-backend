@@ -1,6 +1,5 @@
 package com.learnnow.user.model;
 
-import jakarta.annotation.Nullable;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -138,5 +137,9 @@ public class User {
 
     public void setTokenExpiry(LocalDateTime tokenExpiry) {
         this.tokenExpiry = tokenExpiry;
+    }
+
+    public String getUsername() {
+        return this.email;
     }
 }

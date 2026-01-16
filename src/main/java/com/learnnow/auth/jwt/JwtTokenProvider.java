@@ -1,5 +1,6 @@
 package com.learnnow.auth.jwt;
 
+import com.learnnow.auth.security.UserPrincipal;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -37,12 +38,12 @@ public class JwtTokenProvider {
      */
     public String generateToken(Authentication authentication) {
 
-        String username = authentication.getName();
+        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + jwtExpirationInMs);
 
         return Jwts.builder()
-                .subject(username)
+                .subject(userPrincipal.getUsername())
                 .issuedAt(now)
                 .expiration(expiryDate)
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
