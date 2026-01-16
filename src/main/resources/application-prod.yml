@@ -1,0 +1,30 @@
+app:
+  backend-link: "https://learnnow.ovh/"
+  frontend-link: "https://learnnow.ovh/"
+  mail:
+    from-name: "LearnNow"
+    from-email: ${MAIL_USERNAME}
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+  datasource:
+    url: jdbc:mysql://${DB_HOST:mysql}:${MYSQL_PORT:3306}/${DB_NAME}
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
