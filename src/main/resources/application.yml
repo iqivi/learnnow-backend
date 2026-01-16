@@ -1,8 +1,8 @@
 app:
   jwtSecret: ${JWT_SECRET}
   jwtExpirationMs: 604800000 # 7 days in milliseconds (604,800,000)
-  backend-link: "http://localhost:8081/"
-  frontend-link: "http://localhost:8099/"
+  backend-link: ${APP_BACKEND_LINK:"http://localhost:8081/"}
+  frontend-link: ${APP_FRONTEND_LINK:"http://localhost:8099/"}
   mail:
     from-name: "LearnNow"
     from-email: ${MAIL_USERNAME}
