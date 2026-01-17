@@ -4,15 +4,24 @@ import com.learnnow.auth.dto.*;
 import com.learnnow.auth.service.AuthService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.net.URI;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
 
     private final AuthService authService;
+    @Value("${app.backend-link}")
+    private String backLink;
+    @Value("${app.frontend-link}")
+    private String frontLink;
 
     @Autowired
     public AuthController(AuthService authService) {
@@ -61,9 +70,25 @@ public class AuthController {
     }
 
 
+//    @GetMapping("/confirm")
+//    public ResponseEntity<AuthResponse> confirmUser(@RequestParam String token) {
+//        return new ResponseEntity<>(authService.confirmUser(token), HttpStatus.OK);
+//
+//    }
+
     @GetMapping("/confirm")
-    public ResponseEntity<AuthResponse> confirmUser(@RequestParam String token) {
-        return new ResponseEntity<>(authService.confirmUser(token), HttpStatus.OK);
+    public ResponseEntity<?> confirmAccount(@RequestParam("token") String token) {
+        try {
+            authService.confirmUser(token);
+            return ResponseEntity.status(HttpStatus.FOUND)
+                    .location(URI.create(frontLink +  "confirm-account?status=success"))
+                    .build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.FOUND)
+                    .location(URI.create(frontLink +  "confirm-account?status=error&message=" +
+                            URLEncoder.encode(e.getMessage(), StandardCharsets.UTF_8)))
+                    .build();
+        }
     }
 
     @PostMapping("/forgot-password")

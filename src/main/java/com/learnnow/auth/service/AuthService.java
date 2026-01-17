@@ -116,14 +116,14 @@ public class AuthService {
     }
 
     @Transactional
-    public AuthResponse confirmUser(String token) {
+    public Boolean confirmUser(String token) {
         User user = userRepository.findByConfirmationToken(token)
                 .orElseThrow(() -> new RuntimeException("Invalid Token"));
 
         user.setEnabled(true);
         user.setConfirmationToken(null);
         userRepository.save(user);
-        return new AuthResponse(true, "Account verified successfully!");
+        return true;
     }
 
     public void requestPasswordReset(String email) {
