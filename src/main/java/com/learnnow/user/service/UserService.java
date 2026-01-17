@@ -36,13 +36,13 @@ public class UserService {
 
     public User findByUsername(String username) {
         return userRepository.findByEmail(username)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException());
     }
 
     @Transactional
     public User updateUser(Long id, UserUpdateRequest request) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException());
 
         user.setFirstName(request.getFirstName());
         user.setLastName(request.getLastName());
