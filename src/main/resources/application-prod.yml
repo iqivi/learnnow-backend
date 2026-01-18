@@ -1,9 +1,17 @@
 app:
-  backend-link: "https://learnnow.ovh/"
-  frontend-link: "https://learnnow.ovh/"
+  jwtSecret: ${JWT_SECRET}
+  jwtExpirationMs: 604800000 # 7 days in milliseconds (604,800,000)
+  backend-link: ${APP_BACKEND_LINK:https://learnnow.ovh/}
+  frontend-link: ${APP_FRONTEND_LINK:https://learnnow.ovh/}
   mail:
     from-name: "LearnNow"
     from-email: ${MAIL_USERNAME}
+logging:
+  level:
+    org.springframework.mail: DEBUG
+    org.springframework.mail.javamail: DEBUG
+    com.learnnow.email: DEBUG
+    com.learnnow.auth.service: DEBUG # upewnij się, że to poprawny pakiet
 spring:
   jpa:
     hibernate:
@@ -23,6 +31,7 @@ spring:
     password: ${MAIL_PASSWORD}
     properties:
       mail:
+        debug: true
         smtp:
           auth: true
           starttls:
