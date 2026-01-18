@@ -1,0 +1,47 @@
+# Test Configuration
+app:
+  jwtSecret: test-jwt-secret-key-for-unit-tests-only
+  jwtExpirationMs: 604800000
+  backend-link: "http://localhost:8080/"
+  frontend-link: "http://localhost:3000/"
+  mail:
+    from-name: "LearnNow Test"
+    from-email: "test@learnnow.com"
+
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  
+  h2:
+    console:
+      enabled: false
+  
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+        format_sql: true
+    show-sql: false
+  
+  mail:
+    host: smtp.example.com
+    port: 587
+    username: test@example.com
+    password: test-password
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+
+logging:
+  level:
+    com.learnnow: DEBUG
+    org.springframework.security: DEBUG
