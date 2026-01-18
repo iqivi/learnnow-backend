@@ -168,14 +168,13 @@ class AuthServiceTest {
         when(userRepository.findByConfirmationToken(token)).thenReturn(Optional.of(user));
         when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        // Act
-        AuthResponse response = authService.confirmUser(token);
+        // Act - ZMIANA: Odbieramy Boolean zamiast AuthResponse
+        Boolean result = authService.confirmUser(token);
 
-        // Assert
-        assertTrue(response.getSuccess());
-        assertEquals("Account verified successfully!", response.getMessage());
-        assertTrue(user.isEnabled());
-        assertNull(user.getConfirmationToken());
+        // Assert - ZMIANA: Sprawdzamy bezpośrednio wartość logiczną
+        assertTrue(result, "Metoda powinna zwrócić true po udanej weryfikacji");
+        assertTrue(user.isEnabled(), "Użytkownik powinien zostać aktywowany");
+        assertNull(user.getConfirmationToken(), "Token weryfikacyjny powinien zostać wyczyszczony");
         verify(userRepository).save(user);
     }
 
