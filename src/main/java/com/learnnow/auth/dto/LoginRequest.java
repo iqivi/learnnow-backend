@@ -22,7 +22,6 @@ public class LoginRequest {
         this.password = password;
     }
 
-    // Getters and Setters
     public String getEmail() {
         return email;
     }
@@ -38,13 +37,4 @@ public class LoginRequest {
     public void setPassword(String password) {
         this.password = password;
     }
-
-    //ONLY  for logging/debugging TODO delete in prod
-    /*@Override
-    public String toString() {
-        return "LoginRequest{" +
-                "usernameOrEmail='" + email + '\'' +
-                ", password='[PROTECTED]'" + // IMPORTANT: Never log the actual password
-                '}';
-    }*/
 }

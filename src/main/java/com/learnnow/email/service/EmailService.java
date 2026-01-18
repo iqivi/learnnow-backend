@@ -46,7 +46,6 @@ public class EmailService {
             helper.setText(htmlContent, true);
 
             mailSender.send(mimeMessage);
-            System.out.println("Email sent successfully in thread: " + Thread.currentThread().getName());
         } catch (MessagingException e) {
             throw new RuntimeException("Failed to send email", e);
         }

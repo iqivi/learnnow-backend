@@ -32,8 +32,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         try {
             String jwt = getJwtFromRequest(request);
-
-            //Validate token and load user if token is valid
             if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {
                 String username = tokenProvider.getUsernameFromJWT(jwt);
                 UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
@@ -42,19 +40,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         null,
                         userDetails.getAuthorities()
                 );
-
-                // Set authentication details TODO add session here
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
-                //Set the Authentication in Spring Security's context
-                //This is what tells Spring Security the user is authenticated for this request.
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         } catch (Exception ex) {
             logger.error("Could not set user authentication in security context", ex);
         }
 
-        //Continue the filter chain
         filterChain.doFilter(request, response);
     }
 
@@ -63,8 +55,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
      */
     private String getJwtFromRequest(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");
-        //Check if the header starts with "Bearer " and extract the token
-        //TODO why this works like that??
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
             return bearerToken.substring(7);
         }

@@ -6,7 +6,6 @@ import com.learnnow.user.model.UserRole;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -24,8 +23,6 @@ public class UserPrincipal implements UserDetails {
     private UserRole userRole;
     private boolean enabled;
 
-    //Using @JsonIgnore to prevent the password from being serialized and exposed in APIs
-    //TODO can email be hidden if we use it as username
     @JsonIgnore
     private String email;
 
@@ -50,9 +47,7 @@ public class UserPrincipal implements UserDetails {
      */
     public static UserPrincipal create(User user) {
         List<GrantedAuthority> authorities = new ArrayList<>();
-        // 1. Get the single enum value
         UserRole role = user.getRole();
-        // 2. Convert it to a SimpleGrantedAuthority with the ROLE_ prefix
         authorities.add(new SimpleGrantedAuthority("ROLE_" + role.name()));
 
         return new UserPrincipal(
@@ -82,7 +77,6 @@ public class UserPrincipal implements UserDetails {
         return email; // Spring Security uses this method for the username/principal
     }
 
-    //TODO apply below in user management
     @Override
     public boolean isAccountNonExpired() {
         return true; // Simple implementation: account never expires
@@ -119,7 +113,6 @@ public class UserPrincipal implements UserDetails {
 
     public UserRole getRole() {return userRole;}
 
-    // Custom equality check required by Spring Security for comparison WHY THO???
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
